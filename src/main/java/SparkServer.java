@@ -28,7 +28,7 @@ public class SparkServer {
                 stop();
             }
             res.status(200);
-            return "OK";
+            return terminal.getModel() + " " + terminal.getVendor();
         });
 
     }

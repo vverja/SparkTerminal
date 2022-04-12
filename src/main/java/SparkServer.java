@@ -11,7 +11,7 @@ public class SparkServer {
             log.severe("error in terminal initialization");
             return;
         }
-
+        System.out.println("Terminal server started");
         get("/terminal/:operation",(req, res)->{
             String operation = req.params(":operation");
             int merchantId = Integer.parseInt(req.queryParamOrDefault("merchant", "0"));
@@ -23,12 +23,10 @@ public class SparkServer {
             }else if ("purchase".equals(operation)){
                 terminal.purchase(summ, merchantId);
             }
-            else if("stop".equals(operation)){
-                terminal.stop();
-                stop();
-            }
             res.status(200);
-            return terminal.getModel() + " " + terminal.getVendor();
+            TerminalAnswer terminalAnswer = terminal.getTerminalAnswer();
+            return String.format("%s %s %s %s", terminalAnswer.getModel(), terminalAnswer.getVendor(),
+                    terminalAnswer.getDescription(), terminalAnswer.getReciept());
         });
 
     }

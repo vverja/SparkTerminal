@@ -11,7 +11,7 @@ import java.util.Map;
 public class TerminalController {
     private final Terminal terminal;
     @Getter
-    private String model, vendor;
+    private final TerminalAnswer terminalAnswer = new TerminalAnswer();
     @Getter
     private boolean isInit;
     private final Gson json = new Gson();
@@ -47,15 +47,16 @@ public class TerminalController {
             log.severe(entity.getErrorDescription());
             return false;
         }
-        vendor = entity.getParams().get("vendor");
-        model = entity.getParams().get("model");
-
-        isInit = vendor!=null&&model!=null;
+        terminalAnswer.setVendor(entity.getParams().get("vendor"));
+        terminalAnswer.setModel(entity.getParams().get("model"));
+        terminalAnswer.setDescription(entity.getErrorDescription());
+        isInit = terminalAnswer.isInit();
         return isInit;
     }
     public void stop(){
         terminal.close();
     }
+
     public boolean xbalance(int merchantId){
         entity.setMethod("Audit");
         Map<String, String> params = new HashMap<>();
@@ -70,12 +71,13 @@ public class TerminalController {
         entity = json.fromJson(reader, JsonEntity.class);
         if (entity.isError()) {
             log.severe(entity.getErrorDescription());
+            terminalAnswer.setDescription(entity.getErrorDescription());
             return false;
         }
         log.info(entity.getParams().get("receipt"));
+        terminalAnswer.setReciept(entity.getParams().get("receipt"));
         return true;
     }
-
     public boolean zbalance(int merchantId){
         entity.setMethod("Verify");
         Map<String, String> params = new HashMap<>();
@@ -90,9 +92,11 @@ public class TerminalController {
         entity = json.fromJson(reader, JsonEntity.class);
         if (entity.isError()) {
             log.severe(entity.getErrorDescription());
+            terminalAnswer.setDescription(entity.getErrorDescription());
             return false;
         }
         log.info(entity.getParams().get("receipt"));
+        terminalAnswer.setReciept(entity.getParams().get("receipt"));
         return true;
     }
 
@@ -106,6 +110,7 @@ public class TerminalController {
         params.put("discount", "");
         params.put("merchantId", String.valueOf(merchantId));
         params.put("facepay", "false");
+        entity.setParams(params);
 
         terminal.writeCommand(json.toJson(entity, JsonEntity.class) + "\0");
         String answer = terminal.readCommand();
@@ -114,12 +119,15 @@ public class TerminalController {
         entity = json.fromJson(reader, JsonEntity.class);
         if (entity.isError()) {
             log.severe(entity.getErrorDescription());
+            terminalAnswer.setDescription(entity.getErrorDescription());
             return false;
         }
         if (!"0000".equals(entity.getParams().get("responseCode"))) {
             log.severe(entity.getErrorDescription());
+            terminalAnswer.setDescription(entity.getErrorDescription());
             return false;
         }
+        terminalAnswer.setReciept(entity.getParamsInString());
         return true;
     }
 
@@ -141,6 +149,7 @@ public class TerminalController {
         entity = json.fromJson(reader, JsonEntity.class);
         if (entity.isError()) {
             log.severe(entity.getErrorDescription());
+            terminalAnswer.setDescription(entity.getErrorDescription());
             return false;
         }
         if (!"0000".equals(entity.getParams().get("responseCode"))) {

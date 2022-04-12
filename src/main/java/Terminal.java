@@ -71,7 +71,7 @@ public class Terminal {
 
 
     public static void main(String[] args) throws InterruptedException {
-        Terminal terminal = new Terminal("/dev/ttyACM0");
+        Terminal terminal = new Terminal("COM3");
         JsonEntity command = new JsonEntity();
         command.setMethod("GetTerminalInfo");
         command.setStep(0);

@@ -12,7 +12,17 @@ public class Terminal {
     private SerialPort serialPort;
     private String data;
     private boolean isDataReaded;
-     public Terminal(String port) {
+    private String errorMessage;
+    private boolean error;
+
+    public String getErrorMessage() {
+        return errorMessage;
+    }
+
+    public boolean isError() {
+        return error;
+    }
+    public Terminal(String port) {
         try {
             serialPort = new SerialPort(port);
             serialPort.openPort();
@@ -34,7 +44,10 @@ public class Terminal {
                 }
             },SerialPort.MASK_RXCHAR);
         } catch (SerialPortException e) {
+            System.out.println("Port not opened!");
             e.printStackTrace();
+            error = true;
+            errorMessage = e.getMessage();
         }
     }
     public boolean writeCommand(String command){
@@ -45,6 +58,8 @@ public class Terminal {
                 return serialPort.writeBytes(command.getBytes(StandardCharsets.UTF_8));
             } catch (SerialPortException e) {
                 e.printStackTrace();
+                error = true;
+                errorMessage = e.getMessage();
             }
         }
         return false;
@@ -65,6 +80,8 @@ public class Terminal {
         try {
             serialPort.closePort();
         } catch (SerialPortException e) {
+            error = true;
+            errorMessage = e.getMessage();
             e.printStackTrace();
         }
     }

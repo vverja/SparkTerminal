@@ -1,4 +1,6 @@
 import com.google.gson.Gson;
+import com.google.gson.JsonIOException;
+import com.google.gson.JsonSyntaxException;
 import com.google.gson.stream.JsonReader;
 import lombok.Getter;
 import lombok.Setter;
@@ -83,7 +85,12 @@ public class TerminalController {
         String answer = terminal.readCommand();
         JsonReader reader = new JsonReader(new StringReader(answer.trim()));
         reader.setLenient(true);
-        entity = json.fromJson(reader, JsonEntity.class);
+        try {
+            entity = json.fromJson(reader, JsonEntity.class);
+        } catch (JsonSyntaxException e) {
+            System.out.println(answer);
+            e.printStackTrace();
+        }
         if (entity.isError()) {
             log.severe(entity.getErrorDescription());
             terminalAnswer.setDescription(entity.getErrorDescription());
@@ -110,7 +117,12 @@ public class TerminalController {
         String answer = terminal.readCommand();
         JsonReader reader = new JsonReader(new StringReader(answer.trim()));
         reader.setLenient(true);
-        entity = json.fromJson(reader, JsonEntity.class);
+        try {
+            entity = json.fromJson(reader, JsonEntity.class);
+        } catch (JsonSyntaxException e) {
+            System.out.println(answer);
+            e.printStackTrace();
+        }
         if (entity.isError()) {
             log.severe(entity.getErrorDescription());
             terminalAnswer.setDescription(entity.getErrorDescription());
@@ -142,7 +154,12 @@ public class TerminalController {
         String answer = terminal.readCommand();
         JsonReader reader = new JsonReader(new StringReader(answer.trim()));
         reader.setLenient(true);
-        entity = json.fromJson(reader, JsonEntity.class);
+        try {
+            entity = json.fromJson(reader, JsonEntity.class);
+        } catch (JsonSyntaxException e) {
+            System.out.println(answer);
+            e.printStackTrace();
+        }
         if (entity.isError()) {
             log.severe(entity.getErrorDescription());
             terminalAnswer.setDescription(entity.getErrorDescription());

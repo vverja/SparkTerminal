@@ -34,9 +34,15 @@ public class Terminal {
                                             |SerialPort.FLOWCONTROL_RTSCTS_OUT);
             serialPort.addEventListener(serialPortEvent -> {
                 if(serialPortEvent.isRXCHAR()&&serialPortEvent.getEventValue()>0){
-                    int bytesCount = serialPortEvent.getEventValue();
                     try {
-                        data = serialPort.readString(bytesCount);
+                        while (data==null||!data.contains("\0")) {
+                            int bytesCount = serialPortEvent.getEventValue();
+                            if (data==null) {
+                                data = serialPort.readString(bytesCount);
+                            }else {
+                                data += serialPort.readString(bytesCount);
+                            }
+                        }
                         isDataReaded = true;
                     } catch (SerialPortException e) {
                         e.printStackTrace();
